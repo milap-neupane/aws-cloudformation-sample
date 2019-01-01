@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: ECR repo test WM Node Test
 Resources:
-  WorkerManagementNodeTestRepo:
+  AWSTrainingTestRepo:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: "milap-node-test"
 Outputs:
-  WorkerManagementNodeTestArn:
-    Value: !GetAtt WorkerManagementNodeTestRepo.Arn
+  AWSTrainingTestArn:
+    Value: !GetAtt AWSTrainingTestRepo.Arn
     Export:
-      Name: WorkerManagementNodeTestArn
+      Name: AWSTrainingTestArn
