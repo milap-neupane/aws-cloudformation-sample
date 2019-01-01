@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ECR repo test WM Node Test
+Resources:
+  WorkerManagementNodeTestRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: "milap-node-test"
+Outputs:
+  WorkerManagementNodeTestArn:
+    Value: !GetAtt WorkerManagementNodeTestRepo.Arn
+    Export:
+      Name: WorkerManagementNodeTestArn

@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ECR repo test WM Node Test
+Parameters:
+  EnvironmentName:
+    Default: alpha
+    Description: Name of the environment this cloudformation stack belongs to
+    Type: String
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: training-aws-lb
+      Subnets:
+      - Fn::ImportValue:
+          !Join [":", [ !Ref EnvironmentName, "SubnetAZ1Public" ]]
+      - Fn::ImportValue:
+          !Join [ ":", [ !Ref EnvironmentName, "SubnetAZ2Public" ]]
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for loadbalancer to services on ECS
+      VpcId:
+        Fn::ImportValue:
+          !Join [ ":", [ !Ref EnvironmentName, "VPC" ]]
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+Outputs:
+  LoadBalancerDNS:
+    Description: Domain name for the loadbalancer
+    Value: !GetAtt LoadBalancer.DNSName
+    Export:
+      Name: !Join [':', [ !Ref EnvironmentName, TrainingDomainName ]]
