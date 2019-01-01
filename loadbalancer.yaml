@@ -27,6 +27,24 @@ Resources:
       SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
           IpProtocol: -1
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref DefaultTargetGroup
+  DefaultTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: aws-training-default
+      VpcId:
+        Fn::ImportValue:
+          !Join [ ":", [ !Ref EnvironmentName, "VPC" ]]
+      Protocol: HTTP
+      Port: 80
 Outputs:
   LoadBalancerDNS:
     Description: Domain name for the loadbalancer
