@@ -1,0 +1,103 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ECS for node app
+Resources:
+  WebListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn:
+        Fn::ImportValue: !Sub ${EnvironmentName}:TrainingLoadBalancerListener
+      Priority: 100
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - /*
+      Actions:
+        - TargetGroupArn: !Ref WebTargetGroup
+          Type: forward
+  
+  WebTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Sub ${EnvironmentName}:VPC
+      Port: 80
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-299
+      TargetType: ip
+      HealthCheckIntervalSeconds: 10
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: "60"
+
+  AWSTrainingECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: AWSTrainingECSCluster
+
+  AWSTrainingECSService:
+    Type: AWS::ECS::Service
+    DependsOn: WebListenerRule
+    Properties:
+      Cluster: !Ref AWSTrainingECSCluster
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: AWSTraining
+          ContainerPort: 8080
+          TargetGroupArn: !Ref WebTargetGroup
+
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          Subnets:
+          - Fn::ImportValue: !Sub ${EnvironmentName}:SubnetAZ1Private
+          - Fn::ImportValue: !Sub ${EnvironmentName}:SubnetAZ2Private
+          SecurityGroups:
+            - Fn::Ref: ContainerSecurityGroup
+      ServiceName: !Sub aws-training-${EnvironmentName}
+      TaskDefinition: !Ref AWSTrainingTaskDefinition
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          !Join [ ":", [ !Ref EnvironmentName, "VPC" ]]
+      GroupDescription: Container security group for ecs containers
+      SecurityGroupIngress:
+        - SourceSecurityGroupId:
+          Fn::ImportValue:
+            !Join [ ":", [ !Ref EnvironmentName, "TrainingLoadBalancerSecurityGroup" ]]
+          IpProtocol: '-1'
+  AWSTrainingTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Cpu: "256"
+      Memory: "512"
+      ExecutionRoleArn:
+        Fn::ImportValue: !Sub ${EnvironmentName}:ECSTaskRole
+      TaskRoleArn:
+        Fn::ImportValue: !Sub ${EnvironmentName}:ECSServiceExecutionRole
+      Family: aws-training
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        -
+          Name: AWSTraining
+          Image: 574574226067.dkr.ecr.us-east-1.amazonaws.com/milap-node-test:latest
+          PortMappings:
+            - ContainerPort: 8080
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref CloudWatchLogsGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: aws-training
