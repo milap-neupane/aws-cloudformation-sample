@@ -51,3 +51,13 @@ Outputs:
     Value: !GetAtt LoadBalancer.DNSName
     Export:
       Name: !Join [':', [ !Ref EnvironmentName, TrainingDomainName ]]
+  LoadBalancerListener:
+    Description: Arn for loadbalancer listener
+    Value: !GetAtt LoadBalancerListener.Arn
+    Export:
+      Name: !Join [':', [ !Ref EnvironmentName, TrainingLoadBalancerListener ]]
+  LoadBalancerSecurityGroup:
+    Description: Loadbalancer security group
+    Value: !Ref LoadBalancerSecurityGroup
+    Export:
+      Name: !Join [':', [ !Ref EnvironmentName, TrainingLoadBalancerSecurityGroup ]]
