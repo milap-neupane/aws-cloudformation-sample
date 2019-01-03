@@ -1,5 +1,10 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: ECS for node app
+Parameters:
+  EnvironmentName:
+    Default: alpha
+    Description: Name of the environment this cloudformation stack belongs to
+    Type: String
 Resources:
   WebListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
@@ -58,7 +63,7 @@ Resources:
           - Fn::ImportValue: !Sub ${EnvironmentName}:SubnetAZ1Private
           - Fn::ImportValue: !Sub ${EnvironmentName}:SubnetAZ2Private
           SecurityGroups:
-            - Fn::Ref: ContainerSecurityGroup
+            - !Ref ContainerSecurityGroup
       ServiceName: !Sub aws-training-${EnvironmentName}
       TaskDefinition: !Ref AWSTrainingTaskDefinition
       DeploymentConfiguration:
@@ -72,19 +77,47 @@ Resources:
           !Join [ ":", [ !Ref EnvironmentName, "VPC" ]]
       GroupDescription: Container security group for ecs containers
       SecurityGroupIngress:
-        - SourceSecurityGroupId:
-          Fn::ImportValue:
-            !Join [ ":", [ !Ref EnvironmentName, "TrainingLoadBalancerSecurityGroup" ]]
-          IpProtocol: '-1'
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+
+  ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ecs-tasks.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+        - PolicyName: AWSTrainingAmazonECSTaskExecutionRolePolicy
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action:
+                # ECS Tasks to download images from ECR
+                - 'ecr:GetAuthorizationToken'
+                - 'ecr:BatchCheckLayerAvailability'
+                - 'ecr:GetDownloadUrlForLayer'
+                - 'ecr:BatchGetImage'
+                # ECS tasks to upload logs to CloudWatch
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: '*'
+
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/ecs/training
+      RetentionInDays: 7
+
   AWSTrainingTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Cpu: "256"
       Memory: "512"
-      ExecutionRoleArn:
-        Fn::ImportValue: !Sub ${EnvironmentName}:ECSTaskRole
-      TaskRoleArn:
-        Fn::ImportValue: !Sub ${EnvironmentName}:ECSServiceExecutionRole
+      ExecutionRoleArn: !Ref ECSTaskRole
       Family: aws-training
       NetworkMode: awsvpc
       RequiresCompatibilities:
@@ -92,7 +125,7 @@ Resources:
       ContainerDefinitions:
         -
           Name: AWSTraining
-          Image: 574574226067.dkr.ecr.us-east-1.amazonaws.com/milap-node-test:latest
+          Image: 574574226067.dkr.ecr.us-east-1.amazonaws.com/milap-node-test:latest2
           PortMappings:
             - ContainerPort: 8080
           LogConfiguration:
