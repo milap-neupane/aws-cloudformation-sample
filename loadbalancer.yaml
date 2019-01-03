@@ -52,8 +52,8 @@ Outputs:
     Export:
       Name: !Join [':', [ !Ref EnvironmentName, TrainingDomainName ]]
   LoadBalancerListener:
-    Description: Arn for loadbalancer listener
-    Value: !GetAtt LoadBalancerListener.Arn
+    Description: loadbalancer listener
+    Value: !Ref LoadBalancerListener
     Export:
       Name: !Join [':', [ !Ref EnvironmentName, TrainingLoadBalancerListener ]]
   LoadBalancerSecurityGroup:
