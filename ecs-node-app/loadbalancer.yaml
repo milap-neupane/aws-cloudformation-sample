@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: ECR repo test WM Node Test
 Parameters:
   EnvironmentName:
-    Default: alpha
+    Default: staging
     Description: Name of the environment this cloudformation stack belongs to
     Type: String
 Resources:

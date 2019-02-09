@@ -125,7 +125,8 @@ Resources:
       ContainerDefinitions:
         -
           Name: AWSTraining
-          Image: 574574226067.dkr.ecr.us-east-1.amazonaws.com/milap-node-test:latest2
+          # Replace image link with the docker image path along with tag
+          Image: # <image_link>
           PortMappings:
             - ContainerPort: 8080
           LogConfiguration:
