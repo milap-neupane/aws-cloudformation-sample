@@ -44,6 +44,20 @@ Scalar(Number, string), Document(list, maps), Set type(string set, int set etc)
  
 ### Creating table with cloudformation
 
+#### Table
+```
+aws cloudformation create-stack --template-body file://table.yml --stack-name dynamodb-table
+```
+#### Local secondary index
+```
+aws cloudformation create-stack --template-body file://localSecondary.yml --stack-name dynamodb-localSecondary
+```
+
+#### Global secondary index
+```
+aws cloudformation create-stack --template-body file://globalSecondary.yml --stack-name dynamodb-globalSecondary
+```
+
 ### Inserting a record in the table
 
 1. Create a file named items.json
