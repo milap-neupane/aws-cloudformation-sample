@@ -15,3 +15,8 @@ Resources:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
       TableName: "users"
+Output:
+  UserTableName:
+    Value:
+      Ref: userDynamoDBTable
+    Description: Name of the users table
