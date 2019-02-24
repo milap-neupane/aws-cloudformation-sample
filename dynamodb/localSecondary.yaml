@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Dynamodb with sort key and local secondary index
+TableOfBooks:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    AttributeDefinitions:
+    - AttributeName: Title
+      AttributeType: S
+    - AttributeName: Category
+      AttributeType: S
+    - AttributeName: Language
+      AttributeType: S
+    KeySchema:
+    - AttributeName: Category
+      KeyType: HASH
+    - AttributeName: Title
+      KeyType: RANGE
+    ProvisionedThroughput:
+      ReadCapacityUnits: "5"
+      WriteCapacityUnits: "5"
+    LocalSecondaryIndexes:
+    - IndexName: LanguageIndex
+      KeySchema:
+      - AttributeName: Category
+        KeyType: HASH
+      - AttributeName: Language
+        KeyType: RANGE
+      Projection:
+        ProjectionType: KEYS_ONLY
+    TableName: "books"
