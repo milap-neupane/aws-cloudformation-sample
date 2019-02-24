@@ -42,3 +42,29 @@ Scalar(Number, string), Document(list, maps), Set type(string set, int set etc)
 - INCLUDE
 - ALL
  
+### Creating table with cloudformation
+
+### Inserting a record in the table
+
+1. Create a file named items.json
+
+```Json
+{
+  "id": {"S": "RandomId"},
+  "name": {"S": "Milap Neupane"},
+  "address": {"S": "Nepal"},
+  "email": {"S": "milap.neupane@nepal.com"}
+}
+```
+
+2. Use cli command to create the record:
+
+```
+aws dynamodb put-item --table-name users --item file://item.json
+```
+
+3. Fetch all the data in dynamodb:
+
+```
+aws dynamodb scan --table-name users
+```
