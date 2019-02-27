@@ -46,7 +46,7 @@ Scalar(Number, string), Document(list, maps), Set type(string set, int set etc)
 
 #### Table
 ```
-aws cloudformation create-stack --template-body file://table.yml --stack-name dynamodb-table
+aws cloudformation create-stack --template-body file://table.yaml --stack-name dynamodb-table --profile <profile> --region us-east-1
 ```
 #### Local secondary index
 ```
@@ -74,11 +74,11 @@ aws cloudformation create-stack --template-body file://globalSecondary.yml --sta
 2. Use cli command to create the record:
 
 ```
-aws dynamodb put-item --table-name users --item file://item.json
+aws dynamodb put-item --table-name users --item file://item.json --profile <profile> --region us-east-
 ```
 
 3. Fetch all the data in dynamodb:
 
 ```
-aws dynamodb scan --table-name users
+aws dynamodb scan --table-name users --region us-east-1 --profile <profile>
 ```

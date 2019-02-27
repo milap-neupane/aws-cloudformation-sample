@@ -1,0 +1,6 @@
+{
+  "Id": {"S": "RandomId"},
+  "name": {"S": "Milap Neupane"},
+  "address": {"S": "Nepal"},
+  "email": {"S": "milap.neupane@nepal.com"}
+}
