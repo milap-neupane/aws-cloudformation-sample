@@ -17,18 +17,18 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
-      TableName: users
+      TableName: usersWithGlobalIndex
       GlobalSecondaryIndexes:
       - IndexName: EmailIndex
         KeySchema:
         - AttributeName: Email
           KeyType: HASH
         Projection:
-          ProjectionType: ALL
+          ProjectionType: KEYS_ONLY
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
-Output:
+Outputs:
   UserTableName:
     Value:
       Ref: userDynamoDBTable

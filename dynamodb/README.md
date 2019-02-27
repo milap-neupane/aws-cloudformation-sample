@@ -85,7 +85,39 @@ aws dynamodb get-item --table-name users --key file://getItemKey.json --region u
 aws cloudformation create-stack --template-body file://localSecondary.yaml --stack-name dynamodb-localSecondary --profile <profile> --region us-east-1
 ```
 
+1. Insert item
+```
+aws dynamodb put-item --table-name books --item file://bookitem.json --profile <profile> --region us-east-1
+```
+
+2. GetItem
+```
+aws dynamodb get-item --table-name books --key file://getBookItemKey.json --region us-east-1 --profile <profile>
+```
+
 #### Global secondary index
 ```
-aws cloudformation create-stack --template-body file://globalSecondary.yml --stack-name dynamodb-globalSecondary
+ aws cloudformation create-stack --template-body file://globalSecondary.yaml --stack-name dynamodb-globalSecondary --region us-east-1 --profile <profile>
+ 
+```
+1. Insert item
+```
+aws dynamodb put-item --table-name usersWithGlobalIndex --item file://item.json --profile team0workermgmt --region us-east-1
+```
+
+2. GetItem
+```
+aws dynamodb get-item --table-name usersWithGlobalIndex --key file://getItemKey.json --region us-east-1 --profile <profile>
+```
+
+3. GetItemFromIndex
+
+```
+aws dynamodb query \
+   --table-name usersWithGlobalIndex \
+   --key-condition-expression "email = :email" \
+   --index-name EmailIndex \
+   --expression-attribute-values  '{":email":{"S":"milap.neupane@nepal.com"}}' \
+   --projection-expression "email" \
+   --profile <profile>
 ```
