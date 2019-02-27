@@ -50,7 +50,7 @@ aws cloudformation create-stack --template-body file://table.yaml --stack-name d
 ```
 #### Local secondary index
 ```
-aws cloudformation create-stack --template-body file://localSecondary.yml --stack-name dynamodb-localSecondary
+aws cloudformation create-stack --template-body file://localSecondary.yaml --stack-name dynamodb-localSecondary --profile <profile> --region us-east-1
 ```
 
 #### Global secondary index
