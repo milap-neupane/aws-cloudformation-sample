@@ -48,17 +48,8 @@ Scalar(Number, string), Document(list, maps), Set type(string set, int set etc)
 ```
 aws cloudformation create-stack --template-body file://table.yaml --stack-name dynamodb-table --profile <profile> --region us-east-1
 ```
-#### Local secondary index
-```
-aws cloudformation create-stack --template-body file://localSecondary.yaml --stack-name dynamodb-localSecondary --profile <profile> --region us-east-1
-```
 
-#### Global secondary index
-```
-aws cloudformation create-stack --template-body file://globalSecondary.yml --stack-name dynamodb-globalSecondary
-```
-
-### Inserting a record in the table
+### Inserting and fetching a record in the table
 
 1. Create a file named items.json
 
@@ -81,4 +72,20 @@ aws dynamodb put-item --table-name users --item file://item.json --profile <prof
 
 ```
 aws dynamodb scan --table-name users --region us-east-1 --profile <profile>
+```
+
+4. Find a item
+
+```
+aws dynamodb get-item --table-name users --key file://getItemKey.json --region us-east-1 --profile <profile>
+```
+
+#### Local secondary index
+```
+aws cloudformation create-stack --template-body file://localSecondary.yaml --stack-name dynamodb-localSecondary --profile <profile> --region us-east-1
+```
+
+#### Global secondary index
+```
+aws cloudformation create-stack --template-body file://globalSecondary.yml --stack-name dynamodb-globalSecondary
 ```
