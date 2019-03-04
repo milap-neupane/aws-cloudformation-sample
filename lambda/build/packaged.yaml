@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sample hello world lambda
+Resources:
+  LambdaExecRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: /
+      Policies:
+      - PolicyName:
+          Fn::Sub: ${AWS::StackName}-service-policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:*'
+            Resource: '*'
+  HelloWorldLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: training-HelloWorld
+      CodeUri: s3://cloudformation-us-east-1-574574226067/d95e15405b51d8f4e42c1b958a763fcb
+      Handler: main
+      Runtime: go1.x
+      Role:
+        Fn::GetAtt:
+        - LambdaExecRole
+        - Arn
